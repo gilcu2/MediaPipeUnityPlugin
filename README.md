@@ -12,6 +12,55 @@ With this plugin, you can
 - Run your custom `Calculator` and `CalculatorGraph` on Unity.
   - :warning: Depending on the type of input/output, you may need to write C++ code.
 
+## :smile_cat: Hello World!
+
+Here is a Hello World! example.\
+Compare it with [the official code](https://github.com/google/mediapipe/blob/cf101e62a9d49a51be76836b2b8e5ba5c06b5da0/mediapipe/examples/desktop/hello_world/hello_world.cc)!
+
+```cs
+using Mediapipe;
+using UnityEngine;
+
+public sealed class HelloWorld : MonoBehaviour
+{
+    private const string _ConfigText = @"
+input_stream: ""in""
+output_stream: ""out""
+node {
+  calculator: ""PassThroughCalculator""
+  input_stream: ""in""
+  output_stream: ""out1""
+}
+node {
+  calculator: ""PassThroughCalculator""
+  input_stream: ""out1""
+  output_stream: ""out""
+}
+";
+
+    private void Start()
+    {
+        var graph = new CalculatorGraph(_ConfigText);
+        var poller = graph.AddOutputStreamPoller<string>("out").Value();
+        graph.StartRun().AssertOk();
+
+        for (var i = 0; i < 10; i++)
+        {
+            graph.AddPacketToInputStream("in", new StringPacket("Hello World!", new Timestamp(i))).AssertOk();
+        }
+
+        graph.CloseInputStream("in");
+        var packet = new StringPacket();
+
+        while (poller.Next(packet))
+        {
+            Debug.Log(packet.Get());
+        }
+        graph.WaitUntilDone().AssertOk();
+    }
+}
+```
+
 ## :art: Example Solutions
 
 Here is a list of [solutions](https://google.github.io/mediapipe/solutions/solutions.html) that you can try in the sample app.
