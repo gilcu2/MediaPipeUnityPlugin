@@ -12,6 +12,21 @@ With this plugin, you can
 - Run your custom `Calculator` and `CalculatorGraph` on Unity.
   - :warning: Depending on the type of input/output, you may need to write C++ code.
 
+## Table of Contents
+
+- [Hello World!](#smile_cat-hello-world)
+- [Example Solutions](#art-example-solutions)
+- [Installation](#hammer_and_wrench-installation)
+  - [Supported Platforms](#supported-platforms)
+  - [Dependencies](#dependencies)
+  - [Linux](#linux)
+  - [macOS](#macos)
+  - [Windows](#windows)
+  - [Android Configuration](#android-configuration)
+  - [Build Script](#build-script)
+- [Try sample app](#plate_with_cutlery-try-sample-app)
+- [LICENSE](#scroll-license)
+
 ## :smile_cat: Hello World!
 
 Here is a Hello World! example.\
@@ -83,7 +98,7 @@ Here is a list of [solutions](https://google.github.io/mediapipe/solutions/solut
 |        Objectron        | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |       |
 |          KNIFT          |                    |                    |                    |                    |                    |                    |       |
 
-## :compass: Installation
+## :hammer_and_wrench: Installation
 
 This repository does not contain required libraries (e.g. `libmediapipe_c.so`, `Google.Protobuf.dll`, etc), so you need to build them first.
 
@@ -105,7 +120,7 @@ This repository does not contain required libraries (e.g. `libmediapipe_c.so`, `
 [^3]: Windows 11 will be also OK.
 [^4]: Running MediaPipe on Windows is [experimental](https://google.github.io/mediapipe/getting_started/install.html#installing-on-windows).
 
-### Prerequisites
+### Dependencies
 
 If Docker is not available, below commands/tools/libraries are required.
 
@@ -555,6 +570,9 @@ If the command finishes successfully, required files will be installed to your h
 
 </details>
 
+<details>
+<summary>Android Configuration</summary>
+
 ### Android Configuration
 
 1. Install [Android Studio](https://developer.android.com/studio/install)
@@ -609,7 +627,9 @@ If the command finishes successfully, required files will be installed to your h
    )
    ```
 
-## :hammer_and_wrench: Build
+</details>
+
+### Build Script
 
 `build.py` supports the following commands.
 
@@ -619,7 +639,7 @@ If the command finishes successfully, required files will be installed to your h
 |   `clean`   |             Clean cache directories (`build`, `bazel-*`)              |
 | `uninstall` |                         Remove install files                          |
 
-### Build Command
+#### Build Command
 
 Run `python build.py build --help` for more details.
 
@@ -664,33 +684,9 @@ If you've built native libraries for CPU (i.e. `--desktop cpu`), select `CPU` fo
 
 Make sure that you select `GPU` for inference mode before building the app, because `CPU` inference mode is not supported currently.
 
-## :question: FAQ
+## :book: Wiki
 
-### InternalException: INTERNAL: ; eglMakeCurrent() returned error 0x3000
-
-If you encounter an error like below and you use OpenGL Core as the Unity's graphics APIs, please try Vulkan.
-
-```txt
-InternalException: INTERNAL: ; eglMakeCurrent() returned error 0x3000_mediapipe/mediapipe/gpu/gl_context_egl.cc:261)
-```
-
-### How to debug?
-
-When debugging, you may want to read the MediaPipe log.
-If you set `true` to `Glog.Logtostderr` before calling `Glog.Initialize`, MediaPipe will output logs to standard error, so you can check them from `Editor.log` or `Player.log`.
-
-You can set various Glog flags as well. See https://github.com/google/glog#setting-flags for available options.
-
-```cs
-void OnEnable() {
-    Glog.Logtosdderr = true;
-    Glog.Initialize("MediaPipeUnityPlugin");
-}
-
-void OnDisable() {
-    Glog.Shutdown();
-}
-```
+:construction: https://github.com/homuler/MediaPipeUnityPlugin/wiki
 
 ## :scroll: LICENSE
 
