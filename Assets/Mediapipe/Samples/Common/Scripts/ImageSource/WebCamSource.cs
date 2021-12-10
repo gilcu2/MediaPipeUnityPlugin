@@ -20,6 +20,8 @@ namespace Mediapipe.Unity
   {
     [Tooltip("For the default resolution, the one whose width is closest to this value will be chosen")]
     [SerializeField] private int _preferableDefaultWidth = 1280;
+    
+    [SerializeField] private int _cameraNumber = 4;
 
     private const string _TAG = nameof(WebCamSource);
 
@@ -126,7 +128,7 @@ namespace Mediapipe.Unity
 
       if (availableSources != null && availableSources.Length > 0)
       {
-        webCamDevice = availableSources[0];
+        webCamDevice = availableSources[_cameraNumber];
       }
 
       _isInitialized = true;
