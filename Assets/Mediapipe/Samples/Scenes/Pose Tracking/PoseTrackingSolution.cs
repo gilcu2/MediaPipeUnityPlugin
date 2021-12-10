@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 using System.Collections;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 namespace Mediapipe.Unity.PoseTracking
@@ -19,10 +20,15 @@ namespace Mediapipe.Unity.PoseTracking
     [SerializeField] private NormalizedRectAnnotationController _roiFromLandmarksAnnotationController;
     [SerializeField] private PoseTrackingGraph _graphRunner;
     [SerializeField] private TextureFramePool _textureFramePool;
+    [SerializeField] private GameObject robot;
 
     private Coroutine _coroutine;
 
     public RunningMode runningMode;
+
+    private float previousRightWrist = 0;
+    private float previousLeftWrist = 0;
+    
 
     public PoseTrackingGraph.ModelComplexity modelComplexity
     {
@@ -159,6 +165,11 @@ namespace Mediapipe.Unity.PoseTracking
 
     private void OnPoseLandmarksOutput(NormalizedLandmarkList poseLandmarks)
     {
+      // float deltaRight = poseLandmarks.Landmark[15].X - previousRightWrist;
+      // if (deltaRight > 0.0)
+      // {
+      //   robot.transform.Rotate(0,deltaRight*10,0,Space.Self);
+      // }
       _poseLandmarksAnnotationController.DrawLater(poseLandmarks);
     }
 
