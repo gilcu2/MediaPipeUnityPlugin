@@ -57,6 +57,8 @@ namespace Mediapipe.Unity
           }
           Logger.LogVerbose(_TAG, $"Glog will output files under {Glog.LogDir}");
         }
+
+        Glog.Logtostderr = true;
         Glog.Initialize("MediaPipeUnityPlugin");
         _isGlogInitialized = true;
       }

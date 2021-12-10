@@ -19,6 +19,7 @@ namespace Mediapipe.Unity.PoseTracking
     [SerializeField] private PoseWorldLandmarkListAnnotationController _poseWorldLandmarksAnnotationController;
     [SerializeField] private NormalizedRectAnnotationController _roiFromLandmarksAnnotationController;
     [SerializeField] private PoseTrackingGraph _graphRunner;
+
     [SerializeField] private TextureFramePool _textureFramePool;
     [SerializeField] private GameObject robot;
 
@@ -26,9 +27,9 @@ namespace Mediapipe.Unity.PoseTracking
 
     public RunningMode runningMode;
 
-    private float previousRightWrist = 0;
-    private float previousLeftWrist = 0;
-    
+    private Vector3 previousRightWrist = Vector3.zero;
+    // private float previousLeftWrist = 0;
+
 
     public PoseTrackingGraph.ModelComplexity modelComplexity
     {
@@ -54,6 +55,7 @@ namespace Mediapipe.Unity.PoseTracking
       {
         Stop();
       }
+
       base.Play();
       _coroutine = StartCoroutine(Run());
     }
@@ -80,6 +82,8 @@ namespace Mediapipe.Unity.PoseTracking
 
     private IEnumerator Run()
     {
+      Logger.LogInfo(TAG, "Running");
+
       var graphInitRequest = _graphRunner.WaitForInit();
       var imageSource = ImageSourceProvider.ImageSource;
 
@@ -90,6 +94,7 @@ namespace Mediapipe.Unity.PoseTracking
         Logger.LogError(TAG, "Failed to start ImageSource, exiting...");
         yield break;
       }
+
       // NOTE: The _screen will be resized later, keeping the aspect ratio.
       _screen.Initialize(imageSource);
 
@@ -148,6 +153,23 @@ namespace Mediapipe.Unity.PoseTracking
 
           // When running synchronously, wait for the outputs here (blocks the main thread).
           var value = _graphRunner.FetchNextValue();
+
+          if (value.poseLandmarks is not null)
+          {
+            var poseLandmarks = value.poseLandmarks?.Landmark;
+            var rightPos = new Vector3(poseLandmarks[15].X, poseLandmarks[15].Y, poseLandmarks[15].Z);
+            Vector3 deltaRight =  rightPos - previousRightWrist;
+            
+            Logger.LogInfo(TAG, $"PoseLandmarksOutput {rightPos} {previousRightWrist} {deltaRight}");
+            
+            previousRightWrist = rightPos;
+
+            if (deltaRight.x > 0.015 )
+            {
+              robot.transform.Rotate(0, deltaRight.x * 100, 0, Space.Self);
+            }
+          }
+
           _poseDetectionAnnotationController.DrawNow(value.poseDetection);
           _poseLandmarksAnnotationController.DrawNow(value.poseLandmarks);
           _poseWorldLandmarksAnnotationController.DrawNow(value.poseWorldLandmarks);
@@ -165,21 +187,18 @@ namespace Mediapipe.Unity.PoseTracking
 
     private void OnPoseLandmarksOutput(NormalizedLandmarkList poseLandmarks)
     {
-      // float deltaRight = poseLandmarks.Landmark[15].X - previousRightWrist;
-      // if (deltaRight > 0.0)
-      // {
-      //   robot.transform.Rotate(0,deltaRight*10,0,Space.Self);
-      // }
       _poseLandmarksAnnotationController.DrawLater(poseLandmarks);
     }
 
     private void OnPoseWorldLandmarksOutput(LandmarkList poseWorldLandmarks)
     {
+      Logger.LogInfo(TAG, $"OnPoseWorldLandmarksOutput {poseWorldLandmarks}");
       _poseWorldLandmarksAnnotationController.DrawLater(poseWorldLandmarks);
     }
 
     private void OnRoiFromLandmarksOutput(NormalizedRect roiFromLandmarks)
     {
+      Logger.LogInfo(TAG, $"OnRoiFromLandmarksOutput {roiFromLandmarks}");
       _roiFromLandmarksAnnotationController.DrawLater(roiFromLandmarks);
     }
   }
